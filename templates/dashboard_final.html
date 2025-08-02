@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎤 Expense Tracker Final - Microfone Real</title>
+    <title>MYEx - An Expenses Tracker by Miller</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -142,6 +142,23 @@
         .transaction-item.expense { border-left-color: #ff4b2b; }
         .transaction-item.income { border-left-color: #38ef7d; }
 
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(-20px); }
+        }
+
+        .trip-card {
+            background: white;
+            border-radius: 10px;
+            border-left: 4px solid #4facfe;
+            transition: all 0.3s ease;
+        }
+
+        .trip-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
         .currency-converter {
             background: var(--warning);
             color: white;
@@ -263,9 +280,9 @@
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
             <a class="navbar-brand fw-bold" href="#">
-                <i class="fas fa-microphone me-2"></i>
-                Expense Tracker Final
-                <span class="badge bg-light text-dark ms-2">🎤 MICROFONE REAL</span>
+                <i class="fas fa-chart-line me-2"></i>
+                MYEx
+                <span class="badge bg-light text-dark ms-2">an expenses tracker by miller</span>
             </a>
             <div class="navbar-nav ms-auto">
                 <span class="navbar-text">

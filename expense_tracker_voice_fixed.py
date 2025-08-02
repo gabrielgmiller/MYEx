@@ -530,6 +530,49 @@ def add_transaction():
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
 
+@app.route('/api/transaction/delete', methods=['POST'])
+def delete_transaction():
+    """Deleta transação"""
+    try:
+        data = request.get_json()
+        transaction_index = data.get('transaction_index')
+        
+        if transaction_index is None:
+            return jsonify({"success": False, "error": "Índice da transação é obrigatório"}), 400
+        
+        # Converte para inteiro
+        try:
+            index = int(transaction_index)
+        except (ValueError, TypeError):
+            return jsonify({"success": False, "error": "Índice deve ser um número"}), 400
+        
+        # Verifica se o índice é válido
+        transactions = tracker.data["transactions"]
+        if index < 0 or index >= len(transactions):
+            return jsonify({"success": False, "error": f"Índice inválido. Deve estar entre 0 e {len(transactions)-1}"}), 400
+        
+        # Remove a transação
+        removed_transaction = transactions.pop(index)
+        print(f"✅ Transação removida no índice {index}: {removed_transaction.get('description', 'N/A')} - €{removed_transaction.get('amount', 0)}")
+        
+        # Salva os dados
+        tracker.save_data()
+        
+        return jsonify({
+            "success": True, 
+            "message": "Transação deletada com sucesso",
+            "removed_transaction": {
+                "description": removed_transaction.get('description', 'N/A'),
+                "amount": removed_transaction.get('amount', 0),
+                "category": removed_transaction.get('category', 'outros')
+            },
+            "remaining_count": len(tracker.data["transactions"])
+        })
+        
+    except Exception as e:
+        print(f"❌ Erro ao deletar transação: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
 @app.route('/api/trips', methods=['GET'])
 def get_trips():
     """Lista viagens"""
@@ -549,6 +592,55 @@ def create_trip():
         return jsonify({"success": True, "trip": trip})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
+
+@app.route('/api/trip/delete', methods=['POST'])
+def delete_trip():
+    """Deleta viagem"""
+    try:
+        data = request.get_json()
+        trip_id = data.get('trip_id')
+        
+        if not trip_id:
+            return jsonify({"success": False, "error": "ID da viagem é obrigatório"}), 400
+        
+        # Verifica se a viagem existe
+        trips = tracker.data["trips"]
+        if trip_id not in trips:
+            return jsonify({"success": False, "error": "Viagem não encontrada"}), 404
+        
+        # Guarda informações da viagem antes de deletar
+        deleted_trip = trips[trip_id]
+        
+        # Remove a viagem
+        del trips[trip_id]
+        
+        # Remove a associação trip_id das transações relacionadas
+        transactions_updated = 0
+        for transaction in tracker.data["transactions"]:
+            if transaction.get('trip_id') == trip_id:
+                transaction.pop('trip_id', None)
+                transactions_updated += 1
+        
+        # Salva os dados
+        tracker.save_data()
+        
+        print(f"✅ Viagem '{deleted_trip.get('name', 'N/A')}' deletada com sucesso")
+        print(f"📝 {transactions_updated} transações tiveram a associação com a viagem removida")
+        
+        return jsonify({
+            "success": True, 
+            "message": "Viagem deletada com sucesso",
+            "deleted_trip": {
+                "name": deleted_trip.get('name', 'N/A'),
+                "budget": deleted_trip.get('budget', 0)
+            },
+            "transactions_updated": transactions_updated,
+            "remaining_trips": len(tracker.data["trips"])
+        })
+        
+    except Exception as e:
+        print(f"❌ Erro ao deletar viagem: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
 
 @app.route('/api/trips/<trip_id>')
 def get_trip_summary(trip_id):

@@ -338,7 +338,7 @@ class ExpenseTrackerFinal {
                         const amountPrefix = transaction.type === 'despesa' ? '-' : '+';
 
                         html += `
-                            <div class="transaction-item ${itemClass}" style="animation-delay: ${index * 0.1}s">
+                            <div class="transaction-item ${itemClass}" style="animation-delay: ${index * 0.1}s" data-transaction-index="${index}">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="flex-grow-1">
                                         <div class="fw-bold">
@@ -349,11 +349,16 @@ class ExpenseTrackerFinal {
                                             ${transaction.trip_id ? '✈️' : ''}
                                         </small>
                                     </div>
-                                    <div class="text-end">
-                                        <div class="${amountClass} fw-bold">
-                                            ${amountPrefix}€${(transaction.amount || 0).toFixed(2)}
+                                    <div class="text-end d-flex align-items-center">
+                                        <div class="me-3">
+                                            <div class="${amountClass} fw-bold">
+                                                ${amountPrefix}€${(transaction.amount || 0).toFixed(2)}
+                                            </div>
+                                            <small class="text-muted">${transaction.category || 'outros'}</small>
                                         </div>
-                                        <small class="text-muted">${transaction.category || 'outros'}</small>
+                                        <button class="btn btn-sm btn-outline-danger" onclick="deleteTransaction(${index})" title="Deletar transação">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -526,7 +531,7 @@ class ExpenseTrackerFinal {
             const endDate = new Date(trip.end_date).toLocaleDateString('pt-BR');
             
             html += `
-                <div class="trip-card p-3 mb-2">
+                <div class="trip-card p-3 mb-2" data-trip-id="${tripId}">
                     <div class="d-flex justify-content-between align-items-start">
                         <div class="flex-grow-1">
                             <h6 class="mb-1 fw-bold">${trip.name}</h6>
@@ -538,10 +543,16 @@ class ExpenseTrackerFinal {
                                 💰 Orçamento: €${trip.budget.toFixed(2)}
                             </small>
                         </div>
-                        <button class="btn btn-sm btn-outline-primary" 
-                                onclick="viewTripDetails('${tripId}')">
-                            <i class="fas fa-eye"></i>
-                        </button>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm btn-outline-primary" 
+                                    onclick="viewTripDetails('${tripId}')" title="Ver detalhes">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" 
+                                    onclick="deleteTrip('${tripId}')" title="Deletar viagem">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             `;
@@ -602,6 +613,114 @@ class ExpenseTrackerFinal {
                 container.innerHTML = '<p class="text-danger text-center">Erro ao carregar gráfico</p>';
             }
         }
+    }
+}
+
+// Função para deletar transação
+async function deleteTransaction(transactionIndex) {
+    if (!confirm('Tem certeza que deseja deletar esta transação?')) {
+        return;
+    }
+    
+    try {
+        console.log('🗑️ Deletando transação no índice:', transactionIndex);
+        updateDebugStatus('Processando', 'Deletando transação');
+        
+        const response = await fetch('/api/transaction/delete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ transaction_index: transactionIndex })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            console.log('✅ Transação deletada com sucesso');
+            updateDebugStatus('Sucesso', 'Transação deletada');
+            
+            // Remove o elemento da interface
+            const transactionElement = document.querySelector(`[data-transaction-index="${transactionIndex}"]`);
+            if (transactionElement) {
+                transactionElement.style.animation = 'fadeOut 0.3s ease-out';
+                setTimeout(() => {
+                    transactionElement.remove();
+                }, 300);
+            }
+            
+            // Recarrega o dashboard para atualizar os totais
+            setTimeout(() => {
+                if (tracker) {
+                    tracker.loadDashboard();
+                    tracker.loadPieChart();
+                }
+            }, 500);
+            
+        } else {
+            console.error('❌ Erro ao deletar transação:', result.error);
+            updateDebugStatus('Erro', `Delete: ${result.error}`);
+            alert('Erro ao deletar transação: ' + result.error);
+        }
+        
+    } catch (error) {
+        console.error('❌ Erro na requisição de delete:', error);
+        updateDebugStatus('Erro', `Delete: ${error.message}`);
+        alert('Erro ao deletar transação: ' + error.message);
+    }
+}
+
+// Função para deletar viagem
+async function deleteTrip(tripId) {
+    if (!confirm('Tem certeza que deseja deletar esta viagem? Todas as transações associadas serão mantidas, mas perderão a associação com a viagem.')) {
+        return;
+    }
+    
+    try {
+        console.log('🗑️ Deletando viagem:', tripId);
+        updateDebugStatus('Processando', 'Deletando viagem');
+        
+        const response = await fetch('/api/trip/delete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ trip_id: tripId })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            console.log('✅ Viagem deletada com sucesso');
+            updateDebugStatus('Sucesso', 'Viagem deletada');
+            
+            // Remove o elemento da interface
+            const tripElement = document.querySelector(`[data-trip-id="${tripId}"]`);
+            if (tripElement) {
+                tripElement.style.animation = 'fadeOut 0.3s ease-out';
+                setTimeout(() => {
+                    tripElement.remove();
+                }, 300);
+            }
+            
+            // Recarrega as viagens e o dashboard
+            setTimeout(() => {
+                if (tracker) {
+                    tracker.loadTrips();
+                    tracker.loadDashboard();
+                }
+            }, 500);
+            
+        } else {
+            console.error('❌ Erro ao deletar viagem:', result.error);
+            updateDebugStatus('Erro', `Delete: ${result.error}`);
+            alert('Erro ao deletar viagem: ' + result.error);
+        }
+        
+    } catch (error) {
+        console.error('❌ Erro na requisição de delete:', error);
+        updateDebugStatus('Erro', `Delete: ${error.message}`);
+        alert('Erro ao deletar viagem: ' + error.message);
     }
 }
 
