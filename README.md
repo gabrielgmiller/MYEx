@@ -1,6 +1,6 @@
 # 🚀 MYEx - My Expense Tracker
 
-[![Assista à demo](https://img.youtube.com/vi/VIDEO_ID/hqdefault.jpg)](https://youtu.be/VIDEO_ID)
+[![Assista à demo](https://img.youtube.com/vi/VIDEO_ID/hqdefault.jpg)]([https://youtu.be/VIDEO_ID](https://youtu.be/xJpCbeZEOb0))
 
 
 **Controle de Gastos Inteligente para Intercâmbio**
