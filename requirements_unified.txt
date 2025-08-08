@@ -1,0 +1,17 @@
+# 🚀 Unified Expense Tracker - Dependências
+# Controle de Gastos Integrado para Intercâmbio
+# Desenvolvido com Amazon Q Developer
+
+# Core dependencies (obrigatórias)
+matplotlib>=3.7.0
+requests>=2.31.0
+
+# Web interface dependencies (opcionais - para modo web)
+Flask>=2.3.0
+Flask-CORS>=4.0.0
+
+# CLI interface dependencies (opcionais - para cores no terminal)
+colorama>=0.4.4
+
+# Development dependencies (opcionais)
+python-dotenv>=1.0.0
