@@ -1,0 +1,303 @@
+{
+  "transactions": [
+    {
+      "id": 1,
+      "date": "2025-08-02T10:54:30.215212",
+      "amount": 45.5,
+      "type": "despesa",
+      "category": "alimentação",
+      "description": "Supermercado semanal",
+      "trip_id": null
+    },
+    {
+      "id": 2,
+      "date": "2025-08-02T10:54:30.215376",
+      "amount": 12.3,
+      "type": "despesa",
+      "category": "transporte",
+      "description": "Metro - passe diário",
+      "trip_id": null
+    },
+    {
+      "id": 3,
+      "date": "2025-08-02T10:54:30.215510",
+      "amount": 25.0,
+      "type": "despesa",
+      "category": "lazer",
+      "description": "Cinema com amigos",
+      "trip_id": null
+    },
+    {
+      "id": 4,
+      "date": "2025-08-02T10:54:30.215658",
+      "amount": 800.0,
+      "type": "ganho",
+      "category": "outros",
+      "description": "Salário part-time",
+      "trip_id": null
+    },
+    {
+      "id": 5,
+      "date": "2025-08-02T10:54:30.215803",
+      "amount": 35.75,
+      "type": "despesa",
+      "category": "alimentação",
+      "description": "Jantar restaurante italiano",
+      "trip_id": null
+    },
+    {
+      "id": 6,
+      "date": "2025-08-02T10:54:30.215960",
+      "amount": 8.5,
+      "type": "despesa",
+      "category": "transporte",
+      "description": "Uber para casa",
+      "trip_id": null
+    },
+    {
+      "id": 7,
+      "date": "2025-08-02T10:54:30.216207",
+      "amount": 15.0,
+      "type": "despesa",
+      "category": "lazer",
+      "description": "Museu de arte moderna",
+      "trip_id": null
+    },
+    {
+      "id": 8,
+      "date": "2025-08-02T10:54:30.216385",
+      "amount": 450.0,
+      "type": "despesa",
+      "category": "moradia",
+      "description": "Aluguel mensal",
+      "trip_id": null
+    },
+    {
+      "id": 9,
+      "date": "2025-08-02T10:54:30.216590",
+      "amount": 22.4,
+      "type": "despesa",
+      "category": "alimentação",
+      "description": "Café da manhã especial",
+      "trip_id": null
+    },
+    {
+      "id": 10,
+      "date": "2025-08-02T10:54:30.216833",
+      "amount": 18.9,
+      "type": "despesa",
+      "category": "transporte",
+      "description": "Taxi aeroporto",
+      "trip_id": null
+    },
+    {
+      "id": 11,
+      "date": "2025-08-02T10:54:30.217477",
+      "amount": 65.0,
+      "type": "despesa",
+      "category": "lazer",
+      "description": "Show de música",
+      "trip_id": null
+    },
+    {
+      "id": 12,
+      "date": "2025-08-02T10:54:30.217673",
+      "amount": 28.75,
+      "type": "despesa",
+      "category": "alimentação",
+      "description": "Pizza delivery",
+      "trip_id": null
+    },
+    {
+      "id": 13,
+      "date": "2025-08-02T10:54:30.217888",
+      "amount": 200.0,
+      "type": "ganho",
+      "category": "outros",
+      "description": "Freelance design",
+      "trip_id": null
+    },
+    {
+      "id": 14,
+      "date": "2025-08-02T10:54:30.218097",
+      "amount": 42.3,
+      "type": "despesa",
+      "category": "alimentação",
+      "description": "Compras mercado",
+      "trip_id": null
+    },
+    {
+      "id": 15,
+      "date": "2025-08-02T10:54:30.218315",
+      "amount": 9.8,
+      "type": "despesa",
+      "category": "transporte",
+      "description": "Bus urbano",
+      "trip_id": null
+    },
+    {
+      "id": 16,
+      "date": "2025-08-02T10:54:30.218555",
+      "amount": 45.0,
+      "type": "despesa",
+      "category": "alimentação",
+      "description": "Jantar tapas Barcelona",
+      "trip_id": "trip_3"
+    },
+    {
+      "id": 17,
+      "date": "2025-08-02T10:54:30.218821",
+      "amount": 25.0,
+      "type": "despesa",
+      "category": "transporte",
+      "description": "Metro Barcelona 3 dias",
+      "trip_id": "trip_3"
+    },
+    {
+      "id": 18,
+      "date": "2025-08-02T10:54:30.219087",
+      "amount": 35.5,
+      "type": "despesa",
+      "category": "lazer",
+      "description": "Sagrada Família entrada",
+      "trip_id": "trip_3"
+    },
+    {
+      "id": 19,
+      "date": "2025-08-02T10:54:30.219334",
+      "amount": 18.75,
+      "type": "despesa",
+      "category": "alimentação",
+      "description": "Café Park Güell",
+      "trip_id": "trip_3"
+    },
+    {
+      "id": 20,
+      "date": "2025-08-02T10:54:30.219589",
+      "amount": 55.0,
+      "type": "despesa",
+      "category": "moradia",
+      "description": "Hostel 2 noites",
+      "trip_id": "trip_3"
+    },
+    {
+      "id": 21,
+      "date": "2025-08-02T10:54:30.219868",
+      "amount": 65.0,
+      "type": "despesa",
+      "category": "alimentação",
+      "description": "Jantar romano tradicional",
+      "trip_id": "trip_4"
+    },
+    {
+      "id": 22,
+      "date": "2025-08-02T10:54:30.220165",
+      "amount": 30.0,
+      "type": "despesa",
+      "category": "transporte",
+      "description": "Roma Pass transporte",
+      "trip_id": "trip_4"
+    },
+    {
+      "id": 23,
+      "date": "2025-08-02T10:54:30.220431",
+      "amount": 42.5,
+      "type": "despesa",
+      "category": "lazer",
+      "description": "Coliseu + Fórum Romano",
+      "trip_id": "trip_4"
+    },
+    {
+      "id": 24,
+      "date": "2025-08-02T10:54:30.220705",
+      "amount": 28.0,
+      "type": "despesa",
+      "category": "alimentação",
+      "description": "Gelato + café",
+      "trip_id": "trip_4"
+    },
+    {
+      "id": 25,
+      "date": "2025-08-02T10:54:30.220985",
+      "amount": 120.0,
+      "type": "despesa",
+      "category": "moradia",
+      "description": "Hotel centro Roma 3 noites",
+      "trip_id": "trip_4"
+    },
+    {
+      "id": 26,
+      "date": "2025-08-02T10:54:30.221269",
+      "amount": 15.5,
+      "type": "despesa",
+      "category": "lazer",
+      "description": "Fontana di Trevi moedas",
+      "trip_id": "trip_4"
+    },
+    {
+      "id": 27,
+      "date": "2025-08-02T10:54:41.416996",
+      "amount": 7.5,
+      "type": "despesa",
+      "category": "alimentação",
+      "description": "café da manhã",
+      "trip_id": null
+    },
+    {
+      "id": 28,
+      "date": "2025-08-02T10:54:41.418052",
+      "amount": 15.0,
+      "type": "despesa",
+      "category": "transporte",
+      "description": "taxi aeroporto",
+      "trip_id": null
+    },
+    {
+      "id": 29,
+      "date": "2025-08-02T10:54:41.419011",
+      "amount": 25.0,
+      "type": "despesa",
+      "category": "alimentação",
+      "description": "jantar pizza",
+      "trip_id": null
+    }
+  ],
+  "trips": {
+    "trip_1": {
+      "id": "trip_1",
+      "name": "Weekend em Barcelona",
+      "start_date": "2025-07-15",
+      "end_date": "2025-07-17",
+      "budget": 250.0,
+      "created_at": "2025-08-02T10:54:05.221326"
+    },
+    "trip_2": {
+      "id": "trip_2",
+      "name": "Viagem para Roma",
+      "start_date": "2025-07-25",
+      "end_date": "2025-07-28",
+      "budget": 400.0,
+      "created_at": "2025-08-02T10:54:05.221510"
+    },
+    "trip_3": {
+      "id": "trip_3",
+      "name": "Weekend em Barcelona",
+      "start_date": "2025-07-15",
+      "end_date": "2025-07-17",
+      "budget": 250.0,
+      "created_at": "2025-08-02T10:54:30.214598"
+    },
+    "trip_4": {
+      "id": "trip_4",
+      "name": "Viagem para Roma",
+      "start_date": "2025-07-25",
+      "end_date": "2025-07-28",
+      "budget": 400.0,
+      "created_at": "2025-08-02T10:54:30.214862"
+    }
+  },
+  "settings": {
+    "currency": "€",
+    "default_budget": 1000
+  }
+}
