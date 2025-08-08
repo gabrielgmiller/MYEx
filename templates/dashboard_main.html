@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MYEx - My Expense Tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --success: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            --danger: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            --warning: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --info: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: var(--primary) !important;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .hero-section {
+            padding: 40px 0;
+            text-align: center;
+            color: white;
+            background: var(--primary);
+            margin-bottom: 40px;
+        }
+
+        .feature-card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            height: 100%;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .feature-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .monthly-card { 
+            background: var(--success);
+            color: white;
+        }
+
+        .trips-card { 
+            background: var(--info);
+            color: white;
+        }
+
+        .stats-card { 
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-feature {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            border-radius: 15px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-feature:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .tech-badge {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin: 5px;
+            display: inline-block;
+            font-size: 0.9rem;
+        }
+
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.2) !important;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="fas fa-wallet me-2"></i>MYEx
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link active" href="/">
+                    <i class="fas fa-home me-1"></i>Dashboard
+                </a>
+                <a class="nav-link" href="/monthly">
+                    <i class="fas fa-calendar-alt me-1"></i>Mensal
+                </a>
+                <a class="nav-link" href="/trips">
+                    <i class="fas fa-plane me-1"></i>Viagens
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="container">
+            <h1 class="display-5 fw-bold mb-3">
+                <i class="fas fa-rocket me-3"></i>MYEx
+            </h1>
+            <p class="lead mb-3">Controle de Gastos Inteligente para Intercâmbio</p>
+            <p class="mb-3">
+                <span class="tech-badge"><i class="fas fa-microphone me-1"></i>Reconhecimento de Voz</span>
+                <span class="tech-badge"><i class="fas fa-brain me-1"></i>IA Integrada</span>
+                <span class="tech-badge"><i class="fas fa-exchange-alt me-1"></i>Conversão de Moeda</span>
+                <span class="tech-badge"><i class="fas fa-chart-pie me-1"></i>Analytics</span>
+            </p>
+            <div class="row justify-content-center">
+                <div class="col-md-10">
+                    <p class="fs-6">
+                        Desenvolvido no <strong>HACKTOWN 2025</strong> com 
+                        <strong>Amazon Q Developer</strong> - IA e reconhecimento de voz para controle financeiro.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="container">
+        <div class="row g-4 mb-5">
+            <!-- Controle Mensal -->
+            <div class="col-md-4">
+                <div class="card feature-card monthly-card">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <h3 class="card-title mb-3">Controle Mensal</h3>
+                        <p class="card-text mb-4">
+                            Gerencie seus gastos mensais com reconhecimento de voz em português. 
+                            Fale naturalmente e veja a mágica da IA classificar automaticamente.
+                        </p>
+                        <div class="mb-3">
+                            <small class="d-block mb-2">
+                                <i class="fas fa-microphone me-1"></i>
+                                "Gravar 25 euros pizza delivery"
+                            </small>
+                            <small class="d-block">
+                                <i class="fas fa-robot me-1"></i>
+                                Classificação automática: Alimentação
+                            </small>
+                        </div>
+                        <a href="/monthly" class="btn btn-feature">
+                            <i class="fas fa-arrow-right me-2"></i>Acessar Mensal
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gestão de Viagens -->
+            <div class="col-md-4">
+                <div class="card feature-card trips-card">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon">
+                            <i class="fas fa-plane"></i>
+                        </div>
+                        <h3 class="card-title mb-3">Gestão de Viagens</h3>
+                        <p class="card-text mb-4">
+                            Crie viagens com orçamentos específicos. Monitore gastos em tempo real 
+                            com alertas visuais quando atingir 80% e 100% do orçamento.
+                        </p>
+                        <div class="mb-3">
+                            <small class="d-block mb-2">
+                                <i class="fas fa-map-marker-alt me-1"></i>
+                                Viagem: "Itália - 7 dias"
+                            </small>
+                            <small class="d-block">
+                                <i class="fas fa-euro-sign me-1"></i>
+                                Orçamento: €500 | Gasto: €380
+                            </small>
+                        </div>
+                        <a href="/trips" class="btn btn-feature">
+                            <i class="fas fa-arrow-right me-2"></i>Gerenciar Viagens
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics e Relatórios -->
+            <div class="col-md-4">
+                <div class="card feature-card stats-card">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                        <h3 class="card-title mb-3">Analytics Avançados</h3>
+                        <p class="card-text mb-4">
+                            Visualize seus padrões de gastos com gráficos interativos. 
+                            Conversão automática entre EUR, USD e BRL com taxas em tempo real.
+                        </p>
+                        <div class="mb-3">
+                            <small class="d-block mb-2">
+                                <i class="fas fa-chart-bar me-1"></i>
+                                Distribuição por categoria
+                            </small>
+                            <small class="d-block">
+                                <i class="fas fa-exchange-alt me-1"></i>
+                                Conversão EUR ↔ BRL automática
+                            </small>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <a href="/monthly" class="btn btn-feature btn-sm">
+                                    <i class="fas fa-chart-line me-1"></i>Mensal
+                                </a>
+                            </div>
+                            <div class="col-6">
+                                <a href="/trips" class="btn btn-feature btn-sm">
+                                    <i class="fas fa-plane me-1"></i>Viagens
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card" style="border-radius: 20px; background: white;">
+                    <div class="card-body p-4">
+                        <h4 class="text-center mb-4">
+                            <i class="fas fa-trophy text-warning me-2"></i>
+                            Desenvolvido no HACKTOWN 2025
+                        </h4>
+                        <div class="row text-center">
+                            <div class="col-md-3">
+                                <div class="p-3">
+                                    <i class="fas fa-microphone text-danger fs-2 mb-2"></i>
+                                    <h5>Reconhecimento de Voz</h5>
+                                    <small class="text-muted">Português natural</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="p-3">
+                                    <i class="fas fa-robot text-primary fs-2 mb-2"></i>
+                                    <h5>Amazon Q Developer</h5>
+                                    <small class="text-muted">IA integrada</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="p-3">
+                                    <i class="fas fa-mobile-alt text-success fs-2 mb-2"></i>
+                                    <h5>Interface Moderna</h5>
+                                    <small class="text-muted">Bootstrap 5 + CSS3</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="p-3">
+                                    <i class="fas fa-exchange-alt text-info fs-2 mb-2"></i>
+                                    <h5>Multi-moeda</h5>
+                                    <small class="text-muted">EUR, USD, BRL</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center py-4" style="background: var(--primary); color: white;">
+        <div class="container">
+            <p class="mb-2">
+                <strong>MYEx</strong> - An Expense Tracker by Miller
+            </p>
+            <p class="mb-0">
+                <i class="fas fa-heart text-danger me-1"></i>
+                Feito com amor no HACKTOWN 2025 usando Amazon Q Developer
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
