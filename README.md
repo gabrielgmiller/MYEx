@@ -1,5 +1,8 @@
 # 🚀 MYEx - My Expense Tracker
 
+[![Assista à demo](https://img.youtube.com/vi/VIDEO_ID/hqdefault.jpg)](https://youtu.be/VIDEO_ID)
+
+
 **Controle de Gastos Inteligente para Intercâmbio**
 
 [![HACKTOWN 2025](https://img.shields.io/badge/HACKTOWN-2025-orange?style=for-the-badge)](https://hacktown.com.br)
