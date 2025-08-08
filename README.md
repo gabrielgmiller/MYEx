@@ -1,7 +1,5 @@
 # 🚀 MYEx - My Expense Tracker
 
-[🎬 Veja a demonstração do projeto](media/Mostrando%20o%20projeto.mov)
-
 **Controle de Gastos Inteligente para Intercâmbio**
 
 [![HACKTOWN 2025](https://img.shields.io/badge/HACKTOWN-2025-orange?style=for-the-badge)](https://hacktown.com.br)
