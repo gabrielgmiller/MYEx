@@ -1,229 +1,59 @@
 {
   "transactions": [
     {
-      "id": 10,
-      "date": "2025-08-02T12:03:49.465580",
-      "amount": 18.75,
+      "id": 1,
+      "date": "2025-08-08T03:00:00.000Z",
+      "amount": 10.0,
+      "amount_eur": 10.0,
+      "amount_brl": 63.6,
       "type": "despesa",
-      "category": "alimentação",
-      "description": "café starbucks",
+      "category": "alimentacao",
+      "description": "pizza!",
       "trip_id": null,
       "currency": "EUR",
-      "source": "voice"
+      "exchange_rate": 6.36,
+      "source": "web"
     },
     {
-      "id": 11,
-      "date": "2025-08-02T12:09:38.892106",
-      "amount": 25.0,
-      "type": "despesa",
-      "category": "alimentação",
-      "description": "pizza",
-      "trip_id": null,
-      "currency": "EUR",
-      "source": "voice"
-    },
-    {
-      "id": 12,
-      "date": "2025-08-02T12:09:39.959478",
-      "amount": 25.0,
-      "type": "despesa",
-      "category": "alimentação",
-      "description": "pizza",
-      "trip_id": null,
-      "currency": "EUR",
-      "source": "voice"
-    },
-    {
-      "id": 13,
-      "date": "2025-08-02T12:11:02.499251",
+      "id": 2,
+      "date": "2025-10-08T03:00:00.000Z",
       "amount": 22.0,
+      "amount_eur": 22.0,
+      "amount_brl": 139.92,
       "type": "despesa",
-      "category": "alimentação",
-      "description": "euros jantar teste microfone",
+      "category": "moradia",
+      "description": "aluguel",
       "trip_id": null,
       "currency": "EUR",
-      "source": "voice"
-    },
-    {
-      "id": 14,
-      "date": "2025-08-02T12:13:09.403168",
-      "amount": 15.0,
-      "type": "despesa",
-      "category": "alimentação",
-      "description": "euros café da manhã teste correção",
-      "trip_id": null,
-      "currency": "EUR",
-      "source": "voice"
-    },
-    {
-      "id": 15,
-      "date": "2025-08-02T12:13:58.396975",
-      "amount": 12.0,
-      "type": "despesa",
-      "category": "alimentação",
-      "description": "euros café starbucks",
-      "trip_id": null,
-      "currency": "EUR",
-      "source": "voice"
-    },
-    {
-      "id": 16,
-      "date": "2025-08-02T12:13:59.411428",
-      "amount": 25.0,
-      "type": "despesa",
-      "category": "alimentação",
-      "description": "euros jantar restaurante",
-      "trip_id": null,
-      "currency": "EUR",
-      "source": "voice"
-    },
-    {
-      "id": 17,
-      "date": "2025-08-02T12:14:00.427292",
-      "amount": 8.0,
-      "type": "despesa",
-      "category": "transporte",
-      "description": "euros metro diário",
-      "trip_id": null,
-      "currency": "EUR",
-      "source": "voice"
-    },
-    {
-      "id": 18,
-      "date": "2025-08-02T12:14:01.444026",
-      "amount": 35.0,
-      "type": "despesa",
-      "category": "alimentação",
-      "description": "euros supermercado",
-      "trip_id": null,
-      "currency": "EUR",
-      "source": "voice"
-    },
-    {
-      "id": 19,
-      "date": "2025-08-02T12:14:02.457864",
-      "amount": 15.0,
-      "type": "despesa",
-      "category": "lazer",
-      "description": "euros cinema ingresso",
-      "trip_id": null,
-      "currency": "EUR",
-      "source": "voice"
-    },
-    {
-      "id": 20,
-      "date": "2025-08-02T12:23:04.407177",
-      "amount": 15.0,
-      "type": "despesa",
-      "category": "alimentação",
-      "description": "pizza",
-      "trip_id": null,
-      "currency": "EUR",
-      "source": "voice"
-    },
-    {
-      "id": 21,
-      "date": "2025-08-02T12:23:17.841757",
-      "amount": 8.0,
-      "type": "despesa",
-      "category": "alimentação",
-      "description": "café da manhã",
-      "trip_id": null,
-      "currency": "EUR",
-      "source": "voice"
-    },
-    {
-      "id": 22,
-      "date": "2025-08-02T12:23:17.880014",
-      "amount": 25.0,
-      "type": "despesa",
-      "category": "transporte",
-      "description": "uber centro",
-      "trip_id": null,
-      "currency": "EUR",
-      "source": "voice"
-    },
-    {
-      "id": 23,
-      "date": "2025-08-02T12:23:27.871535",
-      "amount": 12.0,
-      "type": "despesa",
-      "category": "alimentação",
-      "description": "supermercado",
-      "trip_id": null,
-      "currency": "EUR",
-      "source": "voice"
-    },
-    {
-      "id": 24,
-      "date": "2025-08-02T12:24:48.986592",
-      "amount": 30.0,
-      "type": "despesa",
-      "category": "lazer",
-      "description": "Festa em Roma",
-      "trip_id": null,
-      "currency": "EUR",
+      "exchange_rate": 6.36,
       "source": "web"
     },
     {
-      "id": 25,
-      "date": "2025-08-02T12:25:13.330304",
-      "amount": 40.0,
+      "id": 3,
+      "date": "2025-08-08",
+      "amount": 10.0,
+      "amount_eur": 10.0,
+      "amount_brl": 63.6,
       "type": "despesa",
-      "category": "outros",
-      "description": "de transporte",
-      "trip_id": null,
-      "currency": "EUR",
-      "source": "voice"
-    },
-    {
-      "id": 26,
-      "date": "2025-08-02T12:26:50.165202",
-      "amount": 500.0,
-      "type": "ganho",
-      "category": "alimentação",
-      "description": "estagio",
-      "trip_id": null,
-      "currency": "EUR",
-      "source": "web"
-    },
-    {
-      "id": 27,
-      "date": "2025-08-02T12:53:47.805540",
-      "amount": 700.0,
-      "type": "despesa",
-      "category": "alimentação",
-      "description": "hh",
-      "currency": "EUR",
-      "source": "web"
-    },
-    {
-      "id": 27,
-      "date": "2025-08-03T22:31:59.449775",
-      "amount": 1000.0,
-      "type": "ganho",
-      "category": "alimentação",
-      "description": "",
-      "trip_id": null,
-      "currency": "EUR",
-      "source": "web"
-    },
-    {
-      "id": 20,
-      "date": "2025-08-08T10:52:04.099321",
-      "amount": 12000.0,
-      "amount_eur": 12000.0,
-      "amount_brl": 76320.0,
-      "type": "despesa",
-      "category": "transporte",
-      "description": "teste",
-      "trip_id": null,
+      "category": "alimentacao",
+      "description": "jantar",
+      "trip_id": "trip_1",
       "currency": "EUR",
       "exchange_rate": 6.36,
       "source": "web"
     }
   ],
-  "trips": {},
+  "trips": {
+    "trip_1": {
+      "id": "trip_1",
+      "name": "Italia",
+      "start_date": "2025-08-08",
+      "end_date": "2025-08-15",
+      "budget": 1000.0,
+      "created_at": "2025-08-08T16:17:04.674906",
+      "status": "planned"
+    }
+  },
   "settings": {
     "currency": "EUR",
     "currency_symbol": "€",
@@ -234,6 +64,6 @@
     "created_at": "2025-08-02T11:44:33.081377",
     "version": "3.0.0 - Final Unified",
     "total_sessions": 0,
-    "last_updated": "2025-08-08T10:52:04.099350"
+    "last_updated": "2025-08-08T16:17:17.675118"
   }
 }

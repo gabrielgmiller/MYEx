@@ -157,6 +157,12 @@ function changeYear(direction) {
         return;
     }
     
+    // NOVO: Não permitir anos anteriores a 2025
+    if (newYear < 2025) {
+        showError('Navegação limitada a partir de 2025');
+        return;
+    }
+    
     currentViewYear = newYear;
     
     // Se mudou para um ano diferente do atual, ir para janeiro
@@ -175,6 +181,17 @@ function updateNavigationButtons() {
     const prevYearBtn = document.getElementById('prev-year-btn');
     const nextYearBtn = document.getElementById('next-year-btn');
     
+    // NOVO: Desabilitar botão anterior se estiver em 2025
+    if (currentViewYear <= 2025) {
+        prevYearBtn.disabled = true;
+        prevYearBtn.classList.add('btn-month-nav');
+        prevYearBtn.title = 'Navegação limitada a partir de 2025';
+    } else {
+        prevYearBtn.disabled = false;
+        prevYearBtn.classList.remove('btn-month-nav');
+        prevYearBtn.title = 'Ano anterior';
+    }
+    
     // Desabilitar botão próximo se estiver no ano máximo
     if (currentViewYear >= MAX_YEAR) {
         nextYearBtn.disabled = true;
@@ -183,7 +200,7 @@ function updateNavigationButtons() {
     } else {
         nextYearBtn.disabled = false;
         nextYearBtn.classList.remove('btn-month-nav');
-        nextYearBtn.title = '';
+        nextYearBtn.title = 'Próximo ano';
     }
 }
 
@@ -450,56 +467,6 @@ async function loadMonthlyTransactions() {
     }
 }
 
-function renderMonthlyTransactions() {
-    const container = document.getElementById('transactions-container');
-    
-    if (monthlyTransactions.length === 0) {
-        container.innerHTML = `
-            <div class="text-center text-muted py-4">
-                <i class="fas fa-inbox fa-3x mb-3 opacity-50"></i>
-                <p>Nenhuma transação mensal encontrada</p>
-                <p class="small">Use o microfone ou o formulário para adicionar gastos</p>
-            </div>
-        `;
-        return;
-    }
-    
-    // Ordenar por data (mais recente primeiro)
-    const sortedTransactions = monthlyTransactions.sort((a, b) => 
-        new Date(b.date) - new Date(a.date)
-    );
-    
-    container.innerHTML = sortedTransactions.map(transaction => 
-        renderTransactionItem(transaction)
-    ).join('');
-}
-
-function renderTransactionItem(transaction) {
-    const date = new Date(transaction.date).toLocaleDateString('pt-BR');
-    const categoryIcon = getCategoryIcon(transaction.category);
-    
-    return `
-        <div class="transaction-item">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <div class="fw-bold text-danger">-€${transaction.amount.toFixed(2)}</div>
-                    <div class="text-muted small">${transaction.description || 'Sem descrição'}</div>
-                </div>
-                <div class="text-end">
-                    <span class="category-badge category-${transaction.category}">
-                        ${categoryIcon} ${transaction.category}
-                    </span>
-                    <div class="text-muted small">${date}</div>
-                    <div class="text-muted small">
-                        <i class="fas fa-${getSourceIcon(transaction.source)} me-1"></i>
-                        ${getSourceLabel(transaction.source)}
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-}
-
 function updateMonthlyStats() {
     // Usar mês e ano da visualização atual
     const viewMonth = currentViewMonth;
@@ -555,12 +522,12 @@ function renderTransactionItem(transaction) {
     return `
         <div class="transaction-item">
             <div class="d-flex justify-content-between align-items-center">
-                <div>
+                <div class="flex-grow-1">
                     <div class="fw-bold text-danger">-${formatCurrency(amount)}</div>
                     <div class="text-muted small">${transaction.description || 'Sem descrição'}</div>
                     ${originalCurrencyInfo}
                 </div>
-                <div class="text-end">
+                <div class="text-end me-2">
                     <span class="category-badge category-${transaction.category}">
                         ${categoryIcon} ${transaction.category}
                     </span>
@@ -570,10 +537,18 @@ function renderTransactionItem(transaction) {
                         ${getSourceLabel(transaction.source)}
                     </div>
                 </div>
+                <div>
+                    <button class="btn btn-sm btn-outline-danger" 
+                            onclick="deleteTransaction(${transaction.id})" 
+                            title="Deletar transação">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
             </div>
         </div>
     `;
 }
+
 
 function updateCategoryChart() {
     // Filtrar transações do mês selecionado
@@ -780,7 +755,9 @@ async function saveManualTransaction() {
         
         if (result.success) {
             const currencySymbol = currentCurrency === 'EUR' ? '€' : 'R$';
-            const monthName = getMonthName(currentViewMonth);
+            const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 
+                               'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+            const monthName = monthNames[currentViewMonth];
             showSuccess(`Transação adicionada em ${monthName}/${currentViewYear}: ${currencySymbol}${amount.toFixed(2)}`);
             document.getElementById('manual-form').reset();
             loadMonthlyTransactions(); // Recarregar dados
@@ -790,6 +767,46 @@ async function saveManualTransaction() {
     } catch (error) {
         console.error('❌ Erro ao salvar transação:', error);
         showError('Erro ao salvar transação');
+    }
+}
+
+// ========================================
+// 🗑️ DELETAR TRANSAÇÃO
+// ========================================
+
+async function deleteTransaction(transactionId) {
+    if (!confirm('Tem certeza que deseja deletar esta transação?')) {
+        return;
+    }
+    
+    try {
+        // Encontrar índice da transação
+        const transactionIndex = monthlyTransactions.findIndex(t => t.id === transactionId);
+        
+        if (transactionIndex === -1) {
+            showError('Transação não encontrada');
+            return;
+        }
+        
+        const response = await fetch('/api/transaction/delete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ transaction_index: transactionIndex })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showSuccess('Transação deletada com sucesso');
+            loadMonthlyTransactions(); // Recarregar dados
+        } else {
+            showError(result.error || 'Erro ao deletar transação');
+        }
+    } catch (error) {
+        console.error('❌ Erro ao deletar transação:', error);
+        showError('Erro ao deletar transação');
     }
 }
 

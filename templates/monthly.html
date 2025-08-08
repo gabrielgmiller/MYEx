@@ -516,7 +516,7 @@
                         
                         <!-- Microfone Integrado -->
                         <div class="voice-control">
-                            <button class="voice-btn" id="voice-button" onclick="toggleVoiceRecording()" title="Clique para gravar por voz">
+                            <button class="voice-btn" id="voice-button" onclick="initSpeechRecognition()" title="Clique para gravar por voz">
                                 <i class="fas fa-microphone" id="voice-icon"></i>
                             </button>
                             <span class="voice-status" id="voice-status">Clique para falar</span>
@@ -654,5 +654,8 @@
     
     <!-- Custom JS -->
     <script src="/static/js/monthly.js"></script>
+
+    <!-- Voice JS -->
+    <script src="/static/js/voice_local_final.js"></script>
 </body>
 </html>

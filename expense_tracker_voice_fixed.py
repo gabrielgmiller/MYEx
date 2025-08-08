@@ -839,20 +839,56 @@ def get_trip_summary(trip_id):
     else:
         return jsonify({"error": "Trip not found"}), 404
 
-@app.route('/api/voice', methods=['POST'])
-def voice_command():
-    """Comando de voz MELHORADO"""
+
+@app.route("/api/voz", methods=["POST"])
+def processar_voz():
+    """Processa o texto falado e insere uma transação no banco (.json)"""
     try:
-        data = request.json
-        command = data.get('command', '')
-        custom_date = data.get('date')  # NOVO: Aceitar data customizada
-        print(f"🎤 Recebido comando de voz: '{command}'")
-        result = tracker.voice_shortcut(command, custom_date=custom_date)
-        print(f"📤 Enviando resposta: {result.get('success')}")
-        return jsonify(result)
+        data = request.get_json()
+        frase = data.get("frase", "").lower()
+
+        # Exemplo de comando esperado: "gravar 30 reais sushi"
+        import re
+        match = re.search(r"gravar\s*(\d+(?:[.,]\d{1,2})?)\s*(reais|r\$|euros|€)?\s*(.*)", frase)
+        if not match:
+            return jsonify({"mensagem": "Não entendi. Diga: 'gravar 20 reais pizza'"})
+
+        valor = float(match.group(1).replace(",", "."))
+        descricao = match.group(3).strip() or "Sem descrição"
+        categoria = "outros"  # Pode melhorar com regras ou IA leve
+
+        nova_transacao = {
+            "date": datetime.now().strftime("%Y-%m-%d"),
+            "description": descricao,
+            "amount": valor,
+            "currency": "BRL",  # ou "EUR" se quiser detectar pela fala
+            "category": categoria
+        }
+
+        # Salva no JSON do tracker
+        tracker.data["transactions"].append(nova_transacao)
+        with open(tracker.data_file, "w", encoding="utf-8") as f:
+            json.dump(tracker.data, f, ensure_ascii=False, indent=4)
+
+        return jsonify({"mensagem": f"Transação adicionada: R$ {valor:.2f} - {descricao}"})
+    
     except Exception as e:
-        print(f"❌ Erro no comando de voz: {e}")
-        return jsonify({"success": False, "error": str(e)}), 500
+        return jsonify({"mensagem": "Erro ao processar fala", "erro": str(e)}), 500
+    
+# @app.route('/api/voice', methods=['POST'])
+# def voice_command():
+#     """Comando de voz MELHORADO"""
+#     try:
+#         data = request.json
+#         command = data.get('command', '')
+#         custom_date = data.get('date')  # NOVO: Aceitar data customizada
+#         print(f"🎤 Recebido comando de voz: '{command}'")
+#         result = tracker.voice_shortcut(command, custom_date=custom_date)
+#         print(f"📤 Enviando resposta: {result.get('success')}")
+#         return jsonify(result)
+#     except Exception as e:
+#         print(f"❌ Erro no comando de voz: {e}")
+#         return jsonify({"success": False, "error": str(e)}), 500
 
 @app.route('/api/classify', methods=['POST'])
 def classify_text():
