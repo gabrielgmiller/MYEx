@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📅 Controle Mensal - MYEx</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #64748b;
+            --success-color: #059669;
+            --warning-color: #d97706;
+            --danger-color: #dc2626;
+            --gradient-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        body {
+            background: var(--gradient-bg);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .main-container {
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card-custom {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        .card-title {
+            margin-bottom: 2rem;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .transaction-item {
+            background: rgba(248, 250, 252, 0.8);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--primary-color);
+            transition: all 0.3s ease;
+        }
+
+        .transaction-item:hover {
+            background: rgba(248, 250, 252, 1);
+            transform: translateX(5px);
+        }
+
+        .btn-custom {
+            border-radius: 12px;
+            padding: 1rem 2rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary-custom {
+            background: var(--primary-color);
+            border: none;
+            color: white;
+        }
+
+        .btn-primary-custom:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .form-control, .form-select {
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            padding: 1rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.25);
+        }
+
+        .form-label {
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .input-group-text {
+            padding: 1rem;
+            font-size: 1rem;
+            border-radius: 12px 0 0 12px;
+        }
+
+        .mb-3 {
+            margin-bottom: 1.8rem !important;
+        }
+
+        .category-badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .category-alimentacao { background: #fef3c7; color: #92400e; }
+        .category-transporte { background: #dbeafe; color: #1e40af; }
+        .category-lazer { background: #fce7f3; color: #be185d; }
+        .category-moradia { background: #d1fae5; color: #065f46; }
+        .category-outros { background: #f3f4f6; color: #374151; }
+
+        .stats-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 16px;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+            min-height: 120px;
+        }
+
+        .stats-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+        }
+
+        .stats-label {
+            color: #64748b;
+            font-size: 1rem;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        /* Barra de Controles Compacta */
+        .controls-bar {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            padding: 0.8rem 1.5rem;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 3rem;
+            margin: 0 auto;
+            max-width: 100%;
+            width: 100%;
+        }
+
+        /* Navegação de Data */
+        .date-navigation {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-btn-compact {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .nav-btn-compact:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .nav-btn-compact:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .date-display {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 0.5rem 1rem;
+            margin: 0 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 140px;
+            text-align: center;
+        }
+
+        .date-display:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-1px);
+        }
+
+        .month-text {
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-right: 0.5rem;
+        }
+
+        .year-text {
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        /* Controle de Voz Integrado */
+        .voice-control {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-left: auto;
+        }
+
+        .voice-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+
+        .voice-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: scale(1.05);
+        }
+
+        .voice-btn.recording {
+            background: #ef4444;
+            border-color: #dc2626;
+            animation: pulse-voice 1.5s infinite;
+        }
+
+        .voice-status {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.85rem;
+            font-weight: 500;
+            min-width: 100px;
+        }
+
+        /* Animação do microfone */
+        @keyframes pulse-voice {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .controls-bar {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+            
+            .date-navigation {
+                order: 1;
+            }
+            
+            .voice-control {
+                order: 2;
+            }
+        }
+
+        /* Seletor de Moeda */
+        .currency-selector {
+            position: absolute;
+            top: 0;
+            right: 0;
+            z-index: 10;
+        }
+
+        .currency-toggle {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 25px;
+            padding: 4px;
+            display: flex;
+            position: relative;
+            width: 120px;
+            height: 50px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .currency-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .currency-option {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            z-index: 2;
+            position: relative;
+        }
+
+        .currency-option.active {
+            color: #667eea;
+        }
+
+        .currency-option i {
+            font-size: 1rem;
+            margin-bottom: 2px;
+        }
+
+        .currency-slider {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: calc(50% - 4px);
+            height: calc(100% - 8px);
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .currency-slider.brl {
+            transform: translateX(100%);
+        }
+
+        .currency-info {
+            margin-top: 0.5rem;
+            text-align: center;
+        }
+
+        /* Animação para mudança de valores */
+        .value-changing {
+            animation: valueChange 0.5s ease;
+        }
+
+        @keyframes valueChange {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); color: #ffc107; }
+            100% { transform: scale(1); }
+        }
+
+        /* Melhor espaçamento para listas de transações */
+        #transactions-container {
+            padding: 1rem;
+            max-height: 450px;
+            overflow-y: auto;
+        }
+
+        /* Melhor espaçamento para gráficos */
+        #category-chart-container {
+            padding: 1.5rem;
+        }
+
+        /* Ajuste do botão de atualizar */
+        .btn-outline-primary.btn-sm {
+            padding: 0.6rem 1.2rem;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="fas fa-wallet me-2"></i>MYEx
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/">
+                    <i class="fas fa-home me-1"></i>Dashboard
+                </a>
+                <a class="nav-link active" href="/monthly">
+                    <i class="fas fa-calendar-alt me-1"></i>Mensal
+                </a>
+                <a class="nav-link" href="/trips">
+                    <i class="fas fa-plane me-1"></i>Viagens
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container main-container" style="margin-top: 85px;">
+        <!-- Header -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <div class="position-relative">
+                    <!-- Currency Selector -->
+                    <div class="currency-selector position-absolute" style="top: 0; right: 0;">
+                        <div class="currency-toggle" onclick="toggleCurrency()">
+                            <div class="currency-option active" id="currency-eur">
+                                <i class="fas fa-euro-sign"></i>
+                                <span>EUR</span>
+                            </div>
+                            <div class="currency-option" id="currency-brl">
+                                <span>R$</span>
+                                <span>BRL</span>
+                            </div>
+                            <div class="currency-slider" id="currency-slider"></div>
+                        </div>
+                        <div class="currency-info" id="currency-info">
+                            <small class="text-white-75">
+                                <i class="fas fa-exchange-alt me-1"></i>
+                                <span id="exchange-rate">1 EUR = 5.50 BRL</span>
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <!-- Título Centralizado -->
+                    <div class="text-center mb-4">
+                        <h1 class="text-white mb-2">
+                            <i class="fas fa-calendar-alt me-3"></i>Controle Mensal
+                        </h1>
+                        <p class="text-white-50 mb-0">Gerencie seus gastos do dia a dia</p>
+                    </div>
+                    
+                    <!-- Barra de Controles Compacta -->
+                    <div class="controls-bar">
+                        <!-- Navegação de Data -->
+                        <div class="date-navigation">
+                            <button class="nav-btn-compact" onclick="changeYear(-1)" id="prev-year-btn" title="Ano anterior">
+                                <i class="fas fa-angle-double-left"></i>
+                            </button>
+                            <button class="nav-btn-compact" onclick="changeMonth(-1)" title="Mês anterior">
+                                <i class="fas fa-angle-left"></i>
+                            </button>
+                            
+                            <div class="date-display" onclick="goToCurrentMonth()" title="Clique para ir ao mês atual">
+                                <span class="month-text" id="month-display">Janeiro</span>
+                                <span class="year-text" id="year-text">2025</span>
+                            </div>
+                            
+                            <button class="nav-btn-compact" onclick="changeMonth(1)" title="Próximo mês">
+                                <i class="fas fa-angle-right"></i>
+                            </button>
+                            <button class="nav-btn-compact" onclick="changeYear(1)" id="next-year-btn" title="Próximo ano">
+                                <i class="fas fa-angle-double-right"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- Microfone Integrado -->
+                        <div class="voice-control">
+                            <button class="voice-btn" id="voice-button" onclick="toggleVoiceRecording()" title="Clique para gravar por voz">
+                                <i class="fas fa-microphone" id="voice-icon"></i>
+                            </button>
+                            <span class="voice-status" id="voice-status">Clique para falar</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Left Column: Stats and Recent Transactions -->
+            <div class="col-md-4">
+                <!-- Monthly Stats -->
+                <div class="card-custom">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">
+                            <i class="fas fa-chart-bar me-2"></i>Estatísticas do Mês
+                        </h5>
+                        
+                        <div class="stats-card">
+                            <div class="stats-value text-danger" id="monthly-total">€0.00</div>
+                            <div class="stats-label">Total Gasto</div>
+                        </div>
+                        
+                        <div class="stats-card">
+                            <div class="stats-value text-primary" id="monthly-count">0</div>
+                            <div class="stats-label">Transações</div>
+                        </div>
+                        
+                        <div class="stats-card">
+                            <div class="stats-value text-info" id="monthly-average">€0.00</div>
+                            <div class="stats-label">Média por Dia</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Transactions -->
+                <div class="card-custom">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-history me-2"></i>Transações Recentes
+                            </h5>
+                            <button class="btn btn-outline-primary btn-sm" onclick="loadMonthlyTransactions()">
+                                <i class="fas fa-sync-alt me-1"></i>Atualizar
+                            </button>
+                        </div>
+                        
+                        <div id="transactions-container" style="max-height: 400px; overflow-y: auto;">
+                            <div class="text-center text-muted py-4">
+                                <i class="fas fa-spinner fa-spin fa-2x mb-3"></i>
+                                <p>Carregando transações...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Manual Form and Category Chart -->
+            <div class="col-md-8">
+                <!-- Manual Form -->
+                <div class="card-custom">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">
+                            <i class="fas fa-plus-circle me-2"></i>Adicionar Transação
+                        </h5>
+                        
+                        <form id="manual-form">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-euro-sign me-1"></i>Valor
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text currency-symbol">€</span>
+                                        <input type="number" class="form-control" id="manual-amount" 
+                                               step="0.01" min="0" placeholder="0.00" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-tags me-1"></i>Categoria
+                                    </label>
+                                    <select class="form-select" id="manual-category" required>
+                                        <option value="">Selecione...</option>
+                                        <option value="alimentacao">🍽️ Alimentação</option>
+                                        <option value="transporte">🚗 Transporte</option>
+                                        <option value="lazer">🎉 Lazer</option>
+                                        <option value="moradia">🏠 Moradia</option>
+                                        <option value="outros">📦 Outros</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-comment me-1"></i>Descrição
+                                    </label>
+                                    <input type="text" class="form-control" id="manual-description" 
+                                           placeholder="Ex: Jantar no restaurante">
+                                </div>
+                            </div>
+                            
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-primary-custom btn-custom">
+                                    <i class="fas fa-save me-2"></i>Salvar Transação
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Category Chart -->
+                <div class="card-custom">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">
+                            <i class="fas fa-chart-pie me-2"></i>Gastos por Categoria
+                        </h5>
+                        
+                        <div id="category-chart-container">
+                            <div class="text-center text-muted">
+                                <i class="fas fa-chart-pie fa-3x mb-3 opacity-50"></i>
+                                <p>Adicione transações para ver o gráfico</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="/static/js/monthly.js"></script>
+</body>
+</html>

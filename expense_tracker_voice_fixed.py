@@ -59,22 +59,75 @@ class ExpenseTracker:
         with open(self.data_file, 'w', encoding='utf-8') as f:
             json.dump(self.data, f, indent=2, ensure_ascii=False)
     
+    def get_exchange_rate(self, from_currency: str = "EUR", to_currency: str = "BRL") -> float:
+        """Obtém taxa de câmbio atual"""
+        try:
+            # Cache da taxa de câmbio por 1 hora
+            cache_key = f"{from_currency}_{to_currency}"
+            cache_file = f"exchange_rate_{cache_key}.json"
+            
+            # Verificar cache
+            if os.path.exists(cache_file):
+                with open(cache_file, 'r') as f:
+                    cache_data = json.load(f)
+                    cache_time = datetime.fromisoformat(cache_data['timestamp'])
+                    if datetime.now() - cache_time < timedelta(hours=1):
+                        return cache_data['rate']
+            
+            # Buscar taxa atual
+            url = f"https://api.exchangerate-api.com/v4/latest/{from_currency}"
+            response = requests.get(url, timeout=5)
+            
+            if response.status_code == 200:
+                data = response.json()
+                rate = data['rates'].get(to_currency, 5.5)  # Fallback para 5.5
+                
+                # Salvar no cache
+                cache_data = {
+                    'rate': rate,
+                    'timestamp': datetime.now().isoformat()
+                }
+                with open(cache_file, 'w') as f:
+                    json.dump(cache_data, f)
+                
+                return rate
+            else:
+                return 5.5  # Taxa padrão
+                
+        except Exception as e:
+            print(f"⚠️ Erro ao obter taxa de câmbio: {e}")
+            return 5.5  # Taxa padrão
+    
     def add_transaction(self, amount: float, transaction_type: str, category: str, 
                        description: str = "", trip_id: str = None, currency: str = None,
                        source: str = "web") -> Dict:
-        """Adiciona transação com validação completa"""
+        """Adiciona transação com conversão automática de moeda"""
         if currency is None:
             currency = self.data["settings"]["currency"]
+        
+        # Obter taxa de câmbio atual
+        exchange_rate = self.get_exchange_rate("EUR", "BRL")
+        
+        # Calcular valores em ambas as moedas
+        if currency == "EUR":
+            amount_eur = amount
+            amount_brl = amount * exchange_rate
+        else:  # BRL
+            amount_eur = amount / exchange_rate
+            amount_brl = amount
             
         transaction = {
             "id": len(self.data["transactions"]) + 1,
             "date": datetime.now().isoformat(),
-            "amount": float(amount),
+            "amount": float(amount_eur),  # Manter compatibilidade (sempre EUR)
+            "amount_eur": round(amount_eur, 2),
+            "amount_brl": round(amount_brl, 2),
             "type": transaction_type.lower(),
             "category": category.lower(),
             "description": description,
             "trip_id": trip_id,
             "currency": currency,
+            "exchange_rate": exchange_rate,
             "source": source
         }
         
@@ -498,8 +551,115 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'expense-tracker-voice-f
 
 @app.route('/')
 def dashboard():
-    """Dashboard principal"""
+    """Dashboard principal - página inicial"""
+    return render_template('dashboard_main.html')
+
+@app.route('/monthly')
+def monthly_page():
+    """Página de controle mensal"""
+    return render_template('monthly.html')
+
+@app.route('/trips')
+def trips_page():
+    """Página de viagens"""
+    return render_template('trips.html')
+
+@app.route('/dashboard')
+def dashboard_old():
+    """Dashboard antigo - redirecionamento para compatibilidade"""
     return render_template('dashboard_final.html')
+
+@app.route('/api/dashboard/stats')
+def dashboard_stats():
+    """Estatísticas para o dashboard principal"""
+    try:
+        current_month = datetime.now().month
+        current_year = datetime.now().year
+        
+        # Separar transações mensais (sem trip_id) e de viagens (com trip_id)
+        monthly_transactions = [
+            t for t in tracker.data["transactions"] 
+            if not t.get('trip_id') and t.get('type') == 'despesa'
+        ]
+        
+        trip_transactions = [
+            t for t in tracker.data["transactions"] 
+            if t.get('trip_id') and t.get('type') == 'despesa'
+        ]
+        
+        # Calcular gastos do mês atual (apenas transações mensais)
+        monthly_expenses = sum(
+            t['amount'] for t in monthly_transactions
+            if datetime.fromisoformat(t['date']).month == current_month and
+               datetime.fromisoformat(t['date']).year == current_year
+        )
+        
+        # Calcular gastos totais em viagens
+        trip_expenses = sum(
+            t['amount'] for t in trip_transactions
+        )
+        
+        # Contar transações totais
+        total_transactions = len(tracker.data["transactions"])
+        
+        return jsonify({
+            "total_transactions": total_transactions,
+            "total_trips": len(tracker.data["trips"]),
+            "monthly_expenses": monthly_expenses,
+            "trip_expenses": trip_expenses,
+            "current_year": current_year
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/monthly/stats')
+def monthly_stats():
+    """Estatísticas mensais com validação de ano"""
+    try:
+        month = request.args.get('month', type=int)
+        year = request.args.get('year', type=int)
+        
+        # Se não especificado, usar mês/ano atual
+        if not month or not year:
+            current_date = datetime.now()
+            month = current_date.month
+            year = current_date.year
+        
+        # Filtrar transações mensais do período especificado
+        monthly_transactions = [
+            t for t in tracker.data["transactions"] 
+            if not t.get('trip_id') and 
+               t.get('type') == 'despesa' and
+               datetime.fromisoformat(t['date']).month == month and
+               datetime.fromisoformat(t['date']).year == year
+        ]
+        
+        total_spent = sum(t['amount'] for t in monthly_transactions)
+        transaction_count = len(monthly_transactions)
+        
+        # Calcular média por dia
+        import calendar
+        days_in_month = calendar.monthrange(year, month)[1]
+        average_per_day = total_spent / days_in_month if days_in_month > 0 else 0
+        
+        # Distribuição por categoria
+        category_distribution = {}
+        for transaction in monthly_transactions:
+            category = transaction['category']
+            category_distribution[category] = category_distribution.get(category, 0) + transaction['amount']
+        
+        return jsonify({
+            "month": month,
+            "year": year,
+            "total_spent": total_spent,
+            "transaction_count": transaction_count,
+            "average_per_day": average_per_day,
+            "days_in_month": days_in_month,
+            "category_distribution": category_distribution,
+            "transactions": monthly_transactions
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/api/dashboard')
 def api_dashboard():
@@ -589,6 +749,30 @@ def create_trip():
             end_date=data['end_date'],
             budget=float(data.get('budget', 0))
         )
+        return jsonify({"success": True, "trip": trip})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 400
+
+@app.route('/api/trips/<trip_id>', methods=['PUT'])
+def update_trip(trip_id):
+    """Atualiza viagem existente"""
+    try:
+        data = request.json
+        
+        if trip_id not in tracker.data["trips"]:
+            return jsonify({"success": False, "error": "Viagem não encontrada"}), 404
+        
+        # Atualizar dados da viagem
+        trip = tracker.data["trips"][trip_id]
+        trip.update({
+            "name": data.get('name', trip['name']),
+            "start_date": data.get('start_date', trip['start_date']),
+            "end_date": data.get('end_date', trip['end_date']),
+            "budget": float(data.get('budget', trip['budget'])),
+            "updated_at": datetime.now().isoformat()
+        })
+        
+        tracker.save_data()
         return jsonify({"success": True, "trip": trip})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
@@ -744,6 +928,21 @@ def health_check():
             "📊 Analytics Avançados"
         ]
     })
+
+@app.route('/api/exchange-rate')
+def get_exchange_rate():
+    """Obtém taxa de câmbio atual"""
+    try:
+        rate = tracker.get_exchange_rate("EUR", "BRL")
+        return jsonify({
+            "success": True,
+            "rate": rate,
+            "from": "EUR",
+            "to": "BRL",
+            "formatted": f"1 EUR = {rate:.2f} BRL"
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
 
 @app.route('/api/categories')
 def get_categories():

@@ -12,12 +12,10 @@ class ExpenseTrackerFinal {
         this.setupEventListeners();
         this.addAnimations();
         
-        // Carrega dados iniciais
-        setTimeout(() => {
-            this.loadDashboard();
-            this.loadTrips();
-            this.loadPieChart();
-        }, 500);
+        // Carrega dados iniciais imediatamente
+        this.loadDashboard();
+        this.loadTrips();
+        this.loadPieChart();
         
         // Auto-refresh a cada 30 segundos
         setInterval(() => this.loadDashboard(), 30000);
@@ -616,15 +614,34 @@ class ExpenseTrackerFinal {
     }
 }
 
-// Função para deletar transação
-async function deleteTransaction(transactionIndex) {
+// 🔧 Função para deletar transação com retry e melhor feedback
+async function deleteTransaction(transactionIndex, retryCount = 0) {
+    const MAX_RETRIES = 2;
+    const RETRY_DELAY = 1000; // 1 segundo
+    
     if (!confirm('Tem certeza que deseja deletar esta transação?')) {
         return;
     }
     
+    // Mostra loading visual
+    const loadingToast = showLoadingToast('Deletando transação...');
+    
     try {
-        console.log('🗑️ Deletando transação no índice:', transactionIndex);
-        updateDebugStatus('Processando', 'Deletando transação');
+        console.log(`🗑️ Deletando transação no índice: ${transactionIndex} (tentativa ${retryCount + 1})`);
+        updateDebugStatus('Processando', `Deletando transação (${retryCount + 1}/${MAX_RETRIES + 1})`);
+        
+        // Verifica se o servidor está respondendo primeiro
+        try {
+            const healthCheck = await fetch('/api/dashboard', {
+                method: 'GET'
+            });
+            
+            if (!healthCheck.ok) {
+                throw new Error('Servidor não está respondendo');
+            }
+        } catch (healthError) {
+            throw new Error('Servidor não está rodando. Inicie a aplicação com: python3 expense_tracker_voice_fixed.py');
+        }
         
         const response = await fetch('/api/transaction/delete', {
             method: 'POST',
@@ -634,13 +651,20 @@ async function deleteTransaction(transactionIndex) {
             body: JSON.stringify({ transaction_index: transactionIndex })
         });
         
+        // Verifica se a resposta é válida
+        if (!response.ok) {
+            throw new Error(`Erro HTTP ${response.status}: ${response.statusText}`);
+        }
+        
         const result = await response.json();
         
         if (result.success) {
             console.log('✅ Transação deletada com sucesso');
             updateDebugStatus('Sucesso', 'Transação deletada');
+            hideLoadingToast(loadingToast);
+            showSuccessToast(`Transação deletada: ${result.removed_transaction?.description || 'N/A'}`);
             
-            // Remove o elemento da interface
+            // Remove o elemento da interface com animação
             const transactionElement = document.querySelector(`[data-transaction-index="${transactionIndex}"]`);
             if (transactionElement) {
                 transactionElement.style.animation = 'fadeOut 0.3s ease-out';
@@ -658,15 +682,57 @@ async function deleteTransaction(transactionIndex) {
             }, 500);
             
         } else {
-            console.error('❌ Erro ao deletar transação:', result.error);
-            updateDebugStatus('Erro', `Delete: ${result.error}`);
-            alert('Erro ao deletar transação: ' + result.error);
+            throw new Error(result.error || 'Erro desconhecido do servidor');
         }
         
     } catch (error) {
-        console.error('❌ Erro na requisição de delete:', error);
-        updateDebugStatus('Erro', `Delete: ${error.message}`);
-        alert('Erro ao deletar transação: ' + error.message);
+        console.error(`❌ Erro na tentativa ${retryCount + 1}:`, error);
+        hideLoadingToast(loadingToast);
+        
+        // Determina o tipo de erro
+        let errorMessage = '';
+        let shouldRetry = false;
+        
+        if (error.name === 'TypeError' && error.message.includes('fetch')) {
+            errorMessage = 'Servidor não está rodando. Inicie a aplicação com: python3 expense_tracker_voice_fixed.py';
+            shouldRetry = retryCount < MAX_RETRIES;
+        } else if (error.message.includes('Servidor não está rodando')) {
+            errorMessage = error.message;
+            shouldRetry = retryCount < MAX_RETRIES;
+        } else if (error.message.includes('timeout') || error.message.includes('network')) {
+            errorMessage = 'Timeout de rede. Verifique sua conexão.';
+            shouldRetry = retryCount < MAX_RETRIES;
+        } else if (error.message.includes('HTTP 500')) {
+            errorMessage = 'Erro interno do servidor. Verifique os logs.';
+            shouldRetry = retryCount < MAX_RETRIES;
+        } else {
+            errorMessage = error.message;
+            shouldRetry = false;
+        }
+        
+        updateDebugStatus('Erro', `Delete: ${errorMessage}`);
+        
+        // Tenta novamente se apropriado
+        if (shouldRetry) {
+            console.log(`🔄 Tentando novamente em ${RETRY_DELAY}ms...`);
+            showWarningToast(`Erro: ${errorMessage}. Tentando novamente...`);
+            
+            setTimeout(() => {
+                deleteTransaction(transactionIndex, retryCount + 1);
+            }, RETRY_DELAY);
+        } else {
+            // Mostra erro final
+            showErrorToast(`Erro ao deletar transação: ${errorMessage}`);
+            
+            // Se for erro de servidor não rodando, oferece ajuda
+            if (errorMessage.includes('Servidor não está rodando')) {
+                setTimeout(() => {
+                    if (confirm('O servidor não está rodando. Deseja ver as instruções para iniciá-lo?')) {
+                        showInfoToast('Execute: python3 expense_tracker_voice_fixed.py na pasta do projeto');
+                    }
+                }, 2000);
+            }
+        }
     }
 }
 
@@ -730,6 +796,130 @@ function updateDebugStatus(status, action) {
     const actionEl = document.getElementById('debug-action');
     if (statusEl) statusEl.textContent = status;
     if (actionEl) actionEl.textContent = action;
+}
+
+// 🎨 FUNÇÕES AUXILIARES PARA TOASTS (NOTIFICAÇÕES VISUAIS)
+function showLoadingToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'toast-loading';
+    toast.innerHTML = `
+        <div class="d-flex align-items-center">
+            <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+            <span>${message}</span>
+        </div>
+    `;
+    toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #007bff;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 9999;
+        animation: slideIn 0.3s ease-out;
+    `;
+    document.body.appendChild(toast);
+    return toast;
+}
+
+function hideLoadingToast(toast) {
+    if (toast && toast.parentNode) {
+        toast.style.animation = 'slideOut 0.3s ease-out';
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+        }, 300);
+    }
+}
+
+function showSuccessToast(message) {
+    showToast(message, 'success', '#28a745');
+}
+
+function showErrorToast(message) {
+    showToast(message, 'error', '#dc3545');
+}
+
+function showWarningToast(message) {
+    showToast(message, 'warning', '#ffc107');
+}
+
+function showInfoToast(message) {
+    showToast(message, 'info', '#17a2b8');
+}
+
+function showToast(message, type, color) {
+    const toast = document.createElement('div');
+    toast.className = `toast-${type}`;
+    
+    const icon = {
+        success: '✅',
+        error: '❌',
+        warning: '⚠️',
+        info: 'ℹ️'
+    }[type] || '📢';
+    
+    toast.innerHTML = `
+        <div class="d-flex align-items-center">
+            <span class="me-2">${icon}</span>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${color};
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 9999;
+        animation: slideIn 0.3s ease-out;
+        max-width: 400px;
+        word-wrap: break-word;
+    `;
+    
+    document.body.appendChild(toast);
+    
+    // Remove automaticamente após 5 segundos
+    setTimeout(() => {
+        if (toast.parentNode) {
+            toast.style.animation = 'slideOut 0.3s ease-out';
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 300);
+        }
+    }, 5000);
+}
+
+// Adiciona CSS para animações se não existir
+if (!document.querySelector('#toast-animations')) {
+    const style = document.createElement('style');
+    style.id = 'toast-animations';
+    style.textContent = `
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; transform: scale(1); }
+            to { opacity: 0; transform: scale(0.8); }
+        }
+    `;
+    document.head.appendChild(style);
 }
 
 // Inicialização
