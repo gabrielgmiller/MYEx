@@ -398,12 +398,18 @@ function updateVoiceFeedback(message, type = 'default') {
 
 async function processVoiceCommand(command) {
     try {
+        // CORREÇÃO: Criar data específica para o mês/ano selecionado
+        const transactionDate = new Date(currentViewYear, currentViewMonth, new Date().getDate());
+        
         const response = await fetch('/api/voice', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ command: command })
+            body: JSON.stringify({ 
+                command: command,
+                date: transactionDate.toISOString() // NOVO: Enviar data específica
+            })
         });
         
         const result = await response.json();
@@ -748,13 +754,17 @@ async function saveManualTransaction() {
         return;
     }
     
+    // CORREÇÃO: Criar data específica para o mês/ano selecionado
+    const transactionDate = new Date(currentViewYear, currentViewMonth, new Date().getDate());
+    
     const transactionData = {
         amount: amount,
         type: 'despesa',
         category: category,
         description: description,
         currency: currentCurrency, // Usar moeda selecionada
-        source: 'web'
+        source: 'web',
+        date: transactionDate.toISOString() // NOVO: Enviar data específica
     };
     
     try {
@@ -770,7 +780,8 @@ async function saveManualTransaction() {
         
         if (result.success) {
             const currencySymbol = currentCurrency === 'EUR' ? '€' : 'R$';
-            showSuccess(`Transação adicionada: ${currencySymbol}${amount.toFixed(2)}`);
+            const monthName = getMonthName(currentViewMonth);
+            showSuccess(`Transação adicionada em ${monthName}/${currentViewYear}: ${currencySymbol}${amount.toFixed(2)}`);
             document.getElementById('manual-form').reset();
             loadMonthlyTransactions(); // Recarregar dados
         } else {

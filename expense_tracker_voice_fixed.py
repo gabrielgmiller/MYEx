@@ -100,7 +100,7 @@ class ExpenseTracker:
     
     def add_transaction(self, amount: float, transaction_type: str, category: str, 
                        description: str = "", trip_id: str = None, currency: str = None,
-                       source: str = "web") -> Dict:
+                       source: str = "web", custom_date: str = None) -> Dict:
         """Adiciona transação com conversão automática de moeda"""
         if currency is None:
             currency = self.data["settings"]["currency"]
@@ -116,9 +116,12 @@ class ExpenseTracker:
             amount_eur = amount / exchange_rate
             amount_brl = amount
             
+        # Usar data customizada se fornecida, senão usar data atual
+        transaction_date = custom_date if custom_date else datetime.now().isoformat()
+            
         transaction = {
             "id": len(self.data["transactions"]) + 1,
-            "date": datetime.now().isoformat(),
+            "date": transaction_date,
             "amount": float(amount_eur),  # Manter compatibilidade (sempre EUR)
             "amount_eur": round(amount_eur, 2),
             "amount_brl": round(amount_brl, 2),
@@ -199,7 +202,7 @@ class ExpenseTracker:
         
         return category, amount, "despesa"
     
-    def voice_shortcut(self, command: str) -> Dict:
+    def voice_shortcut(self, command: str, custom_date: str = None) -> Dict:
         """Processamento MELHORADO de comandos de voz em português natural"""
         command = command.lower().strip()
         
@@ -270,7 +273,7 @@ class ExpenseTracker:
                     category, _, _ = self.classify_description(description)
                     
                     transaction = self.add_transaction(
-                        amount, "despesa", category, description, source="voice"
+                        amount, "despesa", category, description, source="voice", custom_date=custom_date
                     )
                     
                     print(f"🎉 Transação criada: ID {transaction['id']}")
@@ -684,7 +687,8 @@ def add_transaction():
             description=data.get('description', ''),
             trip_id=data.get('trip_id'),
             currency=data.get('currency', 'EUR'),
-            source='web'
+            source='web',
+            custom_date=data.get('date')  # NOVO: Aceitar data customizada
         )
         return jsonify({"success": True, "transaction": transaction})
     except Exception as e:
@@ -841,8 +845,9 @@ def voice_command():
     try:
         data = request.json
         command = data.get('command', '')
+        custom_date = data.get('date')  # NOVO: Aceitar data customizada
         print(f"🎤 Recebido comando de voz: '{command}'")
-        result = tracker.voice_shortcut(command)
+        result = tracker.voice_shortcut(command, custom_date=custom_date)
         print(f"📤 Enviando resposta: {result.get('success')}")
         return jsonify(result)
     except Exception as e:

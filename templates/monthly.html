@@ -203,6 +203,34 @@
             cursor: not-allowed;
         }
 
+        /* Botão Hoje discreto */
+        .today-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 15px;
+            padding: 4px 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            font-size: 0.75rem;
+            margin-left: 8px;
+            opacity: 0.7;
+        }
+
+        .today-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.3);
+            opacity: 1;
+            transform: translateY(-1px);
+        }
+
+        .today-btn i {
+            font-size: 0.7rem;
+        }
+
         .date-display {
             background: rgba(255, 255, 255, 0.15);
             border-radius: 20px;
@@ -477,6 +505,12 @@
                             </button>
                             <button class="nav-btn-compact" onclick="changeYear(1)" id="next-year-btn" title="Próximo ano">
                                 <i class="fas fa-angle-double-right"></i>
+                            </button>
+                            
+                            <!-- Botão Hoje discreto -->
+                            <button class="today-btn" onclick="goToCurrentMonth()" title="Voltar ao mês atual">
+                                <i class="fas fa-home"></i>
+                                <span>Hoje</span>
                             </button>
                         </div>
                         
